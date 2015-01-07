@@ -62,7 +62,7 @@ public class TextToPpt {
 		}
 	}
 	
-	XMLSlideShow template;
+	XMLSlideShow show;
 	XSLFSlideMaster defaultMaster;
 
 	/**
@@ -71,8 +71,7 @@ public class TextToPpt {
 	 * @return The complete(?) XMLSlideShow generated from the input.
 	 */
 	private XMLSlideShow readAndProcess(BufferedReader is) {
-		readTemplate(getInputStreamFor("template/ltree/Ch00 2012.potx"), "POTX");
-		XMLSlideShow show = createShow();
+		show = readTemplate(getInputStreamFor("template/ltree/Ch00 2012.potx"), "POTX");
 		List<Item> items = new ArrayList<>();
 		try {
 			String line = is.readLine();
@@ -81,6 +80,7 @@ public class TextToPpt {
 			// Post-handling: accumulate list, dump when next title found
 			String title = null;
 			int lastIndent = 0;
+			// XXX Maybe a do..while && null check to avoid need for dummy end line
 			while ((line = is.readLine()) != null) {
 				int thisIndent = 0;
 				System.out.println("Input line: " + line);
@@ -123,10 +123,11 @@ public class TextToPpt {
 	 * Read one "POTX"-style template file into memory
 	 * @param is The inputstream opened to the file.
 	 * @param templateFileName The filename, only for use in messages
+	 * @return The slide show represented by the template file.
 	 */
-	private void readTemplate(InputStream is, String templateFileName) {
+	private XMLSlideShow readTemplate(InputStream is, String templateFileName) {
 		try {
-			template = new XMLSlideShow(is);
+			XMLSlideShow template = new XMLSlideShow(is);
 
 			// first see what slide layouts are available :
 			System.out.println("Available slide layouts:");
@@ -139,15 +140,18 @@ public class TextToPpt {
 			// there can be multiple masters each referencing a number of layouts
 			// for demonstration purposes we use the first (default) slide master
 			defaultMaster = template.getSlideMasters()[0];
+			
+			// The template may have slides, which we'll get rid of here.
+			// Except that that crashes with this POI error:
+			// PartAlreadyExistsException: A part with the name '/ppt/slides/slide3.xml' already exists...
+			// for (int i = 0; i < template.getSlides().length; i++) {
+			//	template.removeSlide(i);
+			//}
 
+			return template;
 		} catch (IOException ex) {
 			throw new IllegalArgumentException("Can't open " + templateFileName);
 		}
-	}
-
-	XMLSlideShow createShow() {
-		//create a new empty slide show
-		return new XMLSlideShow();
 	}
 
 	/**
