@@ -76,14 +76,29 @@ public class TextToPpt {
 		List<Item> items = new ArrayList<>();
 		try {
 			String line = is.readLine();
-			doChapterTitleSlide(show, line);
-			// XXX Need to implement post-handling here!
+			doChapterTitleSlide(show, line); // First line of file is chapter title
+			
+			// Post-handling: accumulate list, dump when next title found
+			String title = null;
+			int lastIndent = 0;
 			while ((line = is.readLine()) != null) {
+				int thisIndent = 0;
 				System.out.println("Input line: " + line);
 				if (line.startsWith("\t")) {
-					// XXX save it
+					for (int i = 0; i < line.length(); i++) {
+						if (line.charAt(i) == '\t') {
+							++thisIndent;
+						} else {
+							continue;
+						}
+					}
+					items.add(new StringItem(line.substring(thisIndent)));
 				} else {
-					addSlide(show, line, items);
+					// First line with no tabs is next title
+					if (items.size() > 0) {
+						addSlide(show, title, items);
+					}
+					title = line;
 				}
 			}
 		} catch (IOException e) {
@@ -153,14 +168,9 @@ public class TextToPpt {
 		title1.setText(title);
 	}
 	
-	private XSLFSlide addSlide(XMLSlideShow show, String slideTitle, List<Item> body) {
+	private XSLFSlide addSlide(XMLSlideShow show, String slideTitle, List<Item> items) {
 		// first see what slide layouts are available
-		System.out.println("TextToPpt.createSlide(): Available slide layouts:");
-		for (XSLFSlideMaster master : show.getSlideMasters()){
-			for (XSLFSlideLayout layout : master.getSlideLayouts()){
-				System.out.println(layout.getType());
-			}
-		}
+		System.out.println("TextToPpt.createSlide()");
 
 		// title and content
 		XSLFSlideLayout titleBodyLayout = defaultMaster.getLayout(SlideLayout.TITLE_AND_CONTENT);
@@ -169,11 +179,12 @@ public class TextToPpt {
 		XSLFTextShape title = slide.getPlaceholder(0);
 		title.setText(slideTitle);
 
-		XSLFTextShape body2 = slide.getPlaceholder(1);
-		body2.clearText(); // unset any existing text
-		body2.addNewTextParagraph().addNewTextRun().setText("First paragraph");
-		body2.addNewTextParagraph().addNewTextRun().setText("Second paragraph");
-		body2.addNewTextParagraph().addNewTextRun().setText("Third paragraph");
+		XSLFTextShape body = slide.getPlaceholder(1);
+		body.clearText(); // unset any existing text
+		for (Item item : items) {
+			body.addNewTextParagraph().addNewTextRun().setText(item.toString());
+		}
+		items.clear();	// Don't want to see them again!
 
 		return slide;
 	}
