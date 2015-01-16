@@ -1,0 +1,19 @@
+= TextToPpt
+Imports a tab-indented text file into a PowerPoint 2010 pptx file
+
+=== Sample input:
+ 
+----
+My Slide Show
+My Slide #1 Title
+	Bullet #1
+		SubBullet #1
+		SubBullet #2
+	Bullet #2
+	Bullet #3
+----
+
+Note: as of today, sub-bullets are lumped in with bullets. Don't have time to fix ATM.
+
+=== About
+Author Ian Darwin. License: 2-clause BSD.
