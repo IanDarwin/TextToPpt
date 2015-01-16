@@ -48,12 +48,13 @@ public class TextToPpt {
 			if (args.length > 0) {
 				for (String arg : args) {
 					is = getReaderFor(arg);
-					program.readAndProcess(is);
+					saveShow(program.readAndProcess(is), "/tmp/demoshow.pptx");
 					is.close();
 				}
 			} else {
 				InputStream bis = program.getClass().getResourceAsStream("/demoshow.txt");
 				is = new BufferedReader(new InputStreamReader(bis));
+				// XXX should base name on input name
 				saveShow(program.readAndProcess(is), "/tmp/demoshow.pptx");
 				is.close();
 			}
@@ -80,10 +81,15 @@ public class TextToPpt {
 			// Post-handling: accumulate list, dump when next title found
 			String title = null;
 			int lastIndent = 0;
+			int lineNumber = 0;
 			// XXX Maybe a do..while && null check to avoid need for dummy end line
 			while ((line = is.readLine()) != null) {
+				++lineNumber;
+				if (line != null && line.length() == 0) {
+					continue;
+				}
 				int thisIndent = 0;
-				System.out.println("Input line: " + line);
+				System.out.println("Input line " + lineNumber + ": " + line);
 				if (line.startsWith("\t")) {
 					for (int i = 0; i < line.length(); i++) {
 						if (line.charAt(i) == '\t') {
