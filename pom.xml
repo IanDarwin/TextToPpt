@@ -30,23 +30,34 @@
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-jar-plugin</artifactId>
-					<version>2.3.1</version>
-					<configuration>
-						<archive>
-							<manifest>
-								<mainClass>com.darwinsys.txt2ppt.TextToPpt</mainClass>
-								<addClasspath>true</addClasspath>
-							</manifest>
-							<manifestEntries>
-								<Built-By />
-								<Specification-Title>DarwinIan</Specification-Title>
-								<Specification-Version>${project.version}</Specification-Version>
-								<Implementation-Title>${project.artifactId}</Implementation-Title>
-							</manifestEntries>
-						</archive>
-					</configuration>
-				</plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+				<configuration>
+					<descriptorRefs>
+						<descriptorRef>jar-with-dependencies</descriptorRef>
+					</descriptorRefs>
+					<archive>
+						<manifest>
+							<mainClass>com.darwinsys.txt2ppt.TextToPpt</mainClass>
+							<addClasspath>true</addClasspath>
+						</manifest>
+						<manifestEntries>
+							<Built-By />
+							<Specification-Title>DarwinIan</Specification-Title>
+							<Specification-Version>${project.version}</Specification-Version>
+							<Implementation-Title>${project.artifactId}</Implementation-Title>
+						</manifestEntries>
+					</archive>
+				</configuration>
+				<executions>
+					<execution>
+						<id>make-assembly</id>
+						<phase>package</phase>
+						<goals>
+							<goal>attached</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 	</build>
 
