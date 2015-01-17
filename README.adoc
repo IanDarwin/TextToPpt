@@ -33,6 +33,7 @@ My Slide #2
 
 * Needs parameteriztion ("getopt" or config file): has some dependencies on my personal setup and workflow.
 * You can use a .potx or a .pptx (or older) for your template, but any slides in it will not be removed.
+* LT Authors: Doesn't seem to work with the 2014 templates, so try the 2012 versions then Apply Style from the 2014 when opened in PPT.
 
 === About
 Author Ian Darwin. 
