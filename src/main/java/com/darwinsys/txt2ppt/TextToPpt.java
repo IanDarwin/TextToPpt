@@ -9,7 +9,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.List;
 
 import org.apache.poi.util.IOUtils;
 import org.apache.poi.xslf.usermodel.SlideLayout;
@@ -90,6 +89,7 @@ public class TextToPpt {
 			doChapterTitleSlide(show, line); // First line of file is chapter title
 			
 			int lineNumber = 0;
+			int paragraphNumber = 0;
 			XSLFTextShape body = null;
 			// MAIN LOOP
 			while ((line = is.readLine()) != null) {
@@ -117,14 +117,15 @@ public class TextToPpt {
 
 					body = slide.getPlaceholder(1);
 					body.clearText(); // unset any existing text
+					paragraphNumber = 0;
 					continue;
 				}
 					
 				body.addNewTextParagraph().addNewTextRun().setText(text.toString());
-				final List<XSLFTextParagraph> paras = body.getTextParagraphs();
-				XSLFTextParagraph para = paras.get(paras.size() - 1);
-				System.out.println(lineNumber + "-->" + thisIndent);
-				para.setLeftMargin(thisIndent - 1);
+				// Aside to POI team: is there a way to create,modify,add a NewParagraph?
+				XSLFTextParagraph para = body.getTextParagraphs().get(paragraphNumber++);
+				System.out.println(paragraphNumber + "-->" + thisIndent);
+				para.setLevel(thisIndent - 1);
 				
 			}
 		} catch (IOException e) {

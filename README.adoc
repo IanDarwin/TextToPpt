@@ -16,7 +16,6 @@ My Slide #1 Title
 
 === BUGS
 
-* Sub-bullets don't get indented, although code is there for it.
 * You can use a .potx or a .pptx (or older) for your template, but any slides in it will not be removed.
 
 === About
