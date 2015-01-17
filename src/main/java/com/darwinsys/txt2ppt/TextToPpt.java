@@ -57,6 +57,10 @@ public class TextToPpt {
 				}
 			} else {
 				InputStream bis = program.getClass().getResourceAsStream("/demoshow.txt");
+				if (bis == null) {
+					System.err.println("Usage: " + TextToPpt.class.getSimpleName() + " textFile [...]");
+					System.exit(1);
+				}
 				is = new BufferedReader(new InputStreamReader(bis));
 				saveShow(program.readAndProcessOneFile(is, template), generateFileName("/tmp/demoshow.txt"));
 				is.close();
