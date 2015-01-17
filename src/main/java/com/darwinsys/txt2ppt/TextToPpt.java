@@ -95,7 +95,6 @@ public class TextToPpt {
 			String line = is.readLine(); ++lineNumber;
 			doChapterTitleSlide(show, line); // First line of file is chapter title
 			
-			int paragraphNumber = 0;
 			XSLFTextShape body = null;
 			int thisIndent = 0, codeIndent = 0;
 			// MAIN LOOP
@@ -139,13 +138,11 @@ public class TextToPpt {
 
 					body = slide.getPlaceholder(1);
 					body.clearText(); // unset any existing text
-					paragraphNumber = 0;
 					continue;
 				}
 					
-				body.addNewTextParagraph().addNewTextRun().setText(text.toString());
-				// Aside to POI team: is there a way to create,modify,add a NewParagraph?
-				XSLFTextParagraph para = body.getTextParagraphs().get(paragraphNumber++);
+				final XSLFTextParagraph para = body.addNewTextParagraph();
+				para.addNewTextRun().setText(text.toString());
 				if (inCode) {
 					para.setBullet(false);
 					para.setLevel(codeIndent - 1);
