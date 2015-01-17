@@ -39,6 +39,7 @@ public class TextToPpt {
 	private static final String OUTPUT_EXTENSION = ".pptx";
 	private static final String DEFAULT_TEMPLATE = "Chapter 2012.pptx";
 	static int fileNumber;
+	private static final boolean verbose = false;
 
 	/** Main program
 	 * @param args One or more input filenames; if none, a built-in demo file is processed.
@@ -94,10 +95,17 @@ public class TextToPpt {
 			// MAIN LOOP
 			while ((line = is.readLine()) != null) {
 				++lineNumber;
-				if (line != null && line.length() == 0) {
+				if (line != null && line.trim().length() == 0) {
 					continue;
 				}
-				System.out.println("Input line " + lineNumber + ": " + line);
+				if (line.charAt(0) == ' ') {
+					System.err.println("Warning: Leading spaces on line " +
+						lineNumber + ", trying to correct to tabs.");
+					line = line.replaceAll("    ", "\t");
+				}
+				if (verbose) {
+					System.out.println("Input line " + lineNumber + ": " + line);
+				}
 				int thisIndent = 0;
 				while (line.charAt(thisIndent) == '\t') {
 							++thisIndent;

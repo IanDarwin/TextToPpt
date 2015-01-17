@@ -1,6 +1,7 @@
 == TextToPpt
 
-Imports a tab-indented text file into a PowerPoint 201x pptx file
+Imports a tab-indented text file into a PowerPoint 201x pptx file.
+Each tab indent will mean an indentation level (up to 4).
 
 === Sample input:
  
