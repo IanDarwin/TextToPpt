@@ -26,4 +26,6 @@ My Slide #1 Title
 * You can use a .potx or a .pptx (or older) for your template, but any slides in it will not be removed.
 
 === About
-Author Ian Darwin. License: ASL2 because of lines derived from Apache POI code examples.
+Author Ian Darwin. 
+
+License: ASL2 because of lines derived from Apache POI code examples.
