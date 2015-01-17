@@ -252,8 +252,10 @@ public class TextToPpt {
 			}
 			for (String d : paths) {
 				f = new File(d, fileName);
-				System.out.printf("TextToPpt.getInputStreamFor(%s): try %s%n",
+				if (verbose) {
+					System.out.printf("TextToPpt.getInputStreamFor(%s): try %s%n",
 						fileName, f);
+				}
 				if (f.exists()) {
 					return new FileInputStream(f);
 				}
