@@ -9,7 +9,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.poi.util.IOUtils;
@@ -165,8 +164,8 @@ public class TextToPpt {
 				}
 			}
 
-			// there can be multiple masters each referencing a number of layouts
-			// for demonstration purposes we use the first (default) slide master
+			// There can be multiple masters each referencing a number of layouts.
+			// For demonstration purposes we use the first (default) slide master
 			defaultMaster = template.getSlideMasters()[0];
 			
 			// The template may have slides, which we'll get rid of here.
