@@ -91,10 +91,10 @@ public class TextToPpt {
 		show = readTemplate(getInputStreamFor(template), "POTX");
 		boolean inCode = false;
 		try {
-			String line = is.readLine();
+			int lineNumber = 0;
+			String line = is.readLine(); ++lineNumber;
 			doChapterTitleSlide(show, line); // First line of file is chapter title
 			
-			int lineNumber = 0;
 			int paragraphNumber = 0;
 			XSLFTextShape body = null;
 			int thisIndent = 0, codeIndent = 0;
