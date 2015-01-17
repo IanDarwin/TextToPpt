@@ -1,5 +1,6 @@
-= TextToPpt
-Imports a tab-indented text file into a PowerPoint 2010 pptx file
+== TextToPpt
+
+Imports a tab-indented text file into a PowerPoint 201x pptx file
 
 === Sample input:
  
@@ -13,7 +14,10 @@ My Slide #1 Title
 	Bullet #3
 ----
 
-Note: as of today, sub-bullets are lumped in with bullets. Don't have time to fix ATM.
+=== BUGS
+
+* Sub-bullets don't get indented, although code is there for it.
+* You can use a .potx or a .pptx (or older) for your template, but any slides in it will not be removed.
 
 === About
-Author Ian Darwin. License: 2-clause BSD.
+Author Ian Darwin. License: ASL2 because of lines derived from Apache POI code examples.
