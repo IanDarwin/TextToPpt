@@ -20,6 +20,7 @@ import org.apache.poi.xslf.usermodel.XSLFPictureShape;
 import org.apache.poi.xslf.usermodel.XSLFSlide;
 import org.apache.poi.xslf.usermodel.XSLFSlideLayout;
 import org.apache.poi.xslf.usermodel.XSLFSlideMaster;
+import org.apache.poi.xslf.usermodel.XSLFTextParagraph;
 import org.apache.poi.xslf.usermodel.XSLFTextShape;
 
 /**
@@ -38,7 +39,7 @@ import org.apache.poi.xslf.usermodel.XSLFTextShape;
  */
 public class TextToPpt {
 	private static final String OUTPUT_EXTENSION = ".pptx";
-	private static final String DEFAULT_TEMPLATE = "Ch00 2012.pptx";
+	private static final String DEFAULT_TEMPLATE = "Chapter 2012.pptx";
 	static int fileNumber;
 
 	/** Main program
@@ -52,13 +53,13 @@ public class TextToPpt {
 			if (args.length > 0) {
 				for (String arg : args) {
 					is = getReaderFor(arg);
-					saveShow(program.readAndProcess(is, template), generateFileName(arg));
+					saveShow(program.readAndProcessOneFile(is, template), generateFileName(arg));
 					is.close();
 				}
 			} else {
 				InputStream bis = program.getClass().getResourceAsStream("/demoshow.txt");
 				is = new BufferedReader(new InputStreamReader(bis));
-				saveShow(program.readAndProcess(is, template), generateFileName("/tmp/demoshow.txt"));
+				saveShow(program.readAndProcessOneFile(is, template), generateFileName("/tmp/demoshow.txt"));
 				is.close();
 			}
 		} catch (IOException e) {
@@ -83,41 +84,49 @@ public class TextToPpt {
 	 * @param is A BufferedReader for inputting
 	 * @return The complete(?) XMLSlideShow generated from the input.
 	 */
-	private XMLSlideShow readAndProcess(BufferedReader is, String template) {
+	private XMLSlideShow readAndProcessOneFile(BufferedReader is, String template) {
 		show = readTemplate(getInputStreamFor(template), "POTX");
-		List<Item> items = new ArrayList<>();
 		try {
 			String line = is.readLine();
 			doChapterTitleSlide(show, line); // First line of file is chapter title
 			
-			// Post-handling: accumulate list, dump when next title found
-			String title = null;
-			int lastIndent = 0;
 			int lineNumber = 0;
-			// XXX Maybe a do..while && null check to avoid need for dummy end line
+			XSLFTextShape body = null;
+			// MAIN LOOP
 			while ((line = is.readLine()) != null) {
 				++lineNumber;
 				if (line != null && line.length() == 0) {
 					continue;
 				}
-				int thisIndent = 0;
 				System.out.println("Input line " + lineNumber + ": " + line);
-				if (line.startsWith("\t")) {
-					for (int i = 0; i < line.length(); i++) {
-						if (line.charAt(i) == '\t') {
+				int thisIndent = 0;
+				while (line.charAt(thisIndent) == '\t') {
 							++thisIndent;
-						} else {
-							continue;
-						}
-					}
-					items.add(new StringItem(line.substring(thisIndent)));
-				} else {
-					// First line with no tabs is next title
-					if (items.size() > 0) {
-						addSlide(show, title, items);
-					}
-					title = line;
 				}
+				String text = line.substring(thisIndent);
+				if (thisIndent == 0) {
+					// First line with no tabs is next title, so start new slide
+					
+					System.out.println("TextToPpt.createSlide()");
+
+					// title and content
+					XSLFSlideLayout titleBodyLayout = defaultMaster.getLayout(SlideLayout.TITLE_AND_CONTENT);
+					XSLFSlide slide = show.createSlide(titleBodyLayout);
+
+					XSLFTextShape title1 = slide.getPlaceholder(0);
+					title1.setText(text);
+
+					body = slide.getPlaceholder(1);
+					body.clearText(); // unset any existing text
+					continue;
+				}
+					
+				body.addNewTextParagraph().addNewTextRun().setText(text.toString());
+				final List<XSLFTextParagraph> paras = body.getTextParagraphs();
+				XSLFTextParagraph para = paras.get(paras.size() - 1);
+				System.out.println(lineNumber + "-->" + thisIndent);
+				para.setLeftMargin(thisIndent - 1);
+				
 			}
 		} catch (IOException e) {
 			throw new RuntimeException("Could not read file input");
@@ -191,27 +200,6 @@ public class TextToPpt {
 		title1.setText(title);
 	}
 	
-	private XSLFSlide addSlide(XMLSlideShow show, String slideTitle, List<Item> items) {
-		// first see what slide layouts are available
-		System.out.println("TextToPpt.createSlide()");
-
-		// title and content
-		XSLFSlideLayout titleBodyLayout = defaultMaster.getLayout(SlideLayout.TITLE_AND_CONTENT);
-		XSLFSlide slide = show.createSlide(titleBodyLayout);
-
-		XSLFTextShape title = slide.getPlaceholder(0);
-		title.setText(slideTitle);
-
-		XSLFTextShape body = slide.getPlaceholder(1);
-		body.clearText(); // unset any existing text
-		for (Item item : items) {
-			body.addNewTextParagraph().addNewTextRun().setText(item.toString());
-		}
-		items.clear();	// Don't want to see them again!
-
-		return slide;
-	}
-
 	XSLFPictureShape addImage(XMLSlideShow show, XSLFSlide slide, String fileName) {
 		byte[] pictureData;
 		try {

@@ -3,6 +3,8 @@ My Title Slide
 Slide #1 Title
 	Bullet
 	Bullet 2
+		SubBullet 2.1
+		SubBullet 2.2
 	Bullet 3
 
 Slide #2 Title
@@ -10,4 +12,3 @@ Slide #2 Title
 	S2 B2
 	S2 B3
 	S4 B4
-END
