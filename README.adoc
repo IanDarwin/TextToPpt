@@ -34,7 +34,10 @@ My Slide #2
 * Needs parameteriztion ("getopt" or config file): has some dependencies on my personal setup and workflow.
 * Need a way to include image files.
 * You can use a .potx or a .pptx (or older) for your template, but any slides in it will not be removed.
+* Code segments don't have a leading bullet but aren't yet put into CourierNew; 
+there's still room to improve the handling of leading tabs in code.
 * LT Authors: Doesn't seem to work with the 2014 templates, so try the 2012 versions then Apply Style from the 2014 when opened in PPT.
+* This may all be obviated when AsciiDoctor gets the ability to output slide shows fully working.
 
 === About
 Author Ian Darwin. 
