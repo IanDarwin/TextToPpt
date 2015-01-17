@@ -12,20 +12,26 @@ java -jar ~/lib/textToPpt.jar *.txt
 === Sample input:
  
 ----
-My Slide Show
+My Superb Slide Show
 My Slide #1 Title
 	Bullet #1
 		SubBullet #1
 		SubBullet #2
 	Bullet #2
 	Bullet #3
+My Slide #2
+	This is how it's done:
+	----
+	public class Foo {
+		//
+	}
+	----
+	That was a code insert.
 ----
 
 === BUGS/TODO
 
 * Needs parameteriztion ("getopt" or config file): has some dependencies on my personal setup and workflow.
-* Needs to allow AsciiDoc-like "----" lines to enable/disable code insertion; however, this is complicated,
-because once you start that you have to provide a lot more formatting information.
 * You can use a .potx or a .pptx (or older) for your template, but any slides in it will not be removed.
 
 === About
