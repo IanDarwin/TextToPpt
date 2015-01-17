@@ -85,6 +85,7 @@ public class TextToPpt {
 	 */
 	private XMLSlideShow readAndProcessOneFile(BufferedReader is, String template) {
 		show = readTemplate(getInputStreamFor(template), "POTX");
+		boolean inCode = false;
 		try {
 			String line = is.readLine();
 			doChapterTitleSlide(show, line); // First line of file is chapter title
@@ -92,10 +93,19 @@ public class TextToPpt {
 			int lineNumber = 0;
 			int paragraphNumber = 0;
 			XSLFTextShape body = null;
+			int thisIndent = 0, codeIndent = 0;
 			// MAIN LOOP
 			while ((line = is.readLine()) != null) {
 				++lineNumber;
-				if (line != null && line.trim().length() == 0) {
+				String trimmedLine = line.trim();
+				if (trimmedLine.length() == 0) {
+					continue;
+				}
+				if (trimmedLine.equals("----")) {
+					inCode = !inCode;
+					if (inCode) {
+						codeIndent = thisIndent;
+					}
 					continue;
 				}
 				if (line.charAt(0) == ' ') {
@@ -106,7 +116,7 @@ public class TextToPpt {
 				if (verbose) {
 					System.out.println("Input line " + lineNumber + ": " + line);
 				}
-				int thisIndent = 0;
+				thisIndent = 0;
 				while (line.charAt(thisIndent) == '\t') {
 							++thisIndent;
 				}
@@ -132,8 +142,13 @@ public class TextToPpt {
 				body.addNewTextParagraph().addNewTextRun().setText(text.toString());
 				// Aside to POI team: is there a way to create,modify,add a NewParagraph?
 				XSLFTextParagraph para = body.getTextParagraphs().get(paragraphNumber++);
-				System.out.println(paragraphNumber + "-->" + thisIndent);
-				para.setLevel(thisIndent - 1);
+				if (inCode) {
+					para.setBullet(false);
+					para.setLevel(codeIndent - 1);
+					// XXX Also set the font to Courier New?
+				} else {
+					para.setLevel(thisIndent - 1);
+				}
 				
 			}
 		} catch (IOException e) {
