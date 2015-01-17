@@ -37,30 +37,42 @@ import org.apache.poi.xslf.usermodel.XSLFTextShape;
  * http://poi.apache.org/slideshow/xslf-cookbook.html
  */
 public class TextToPpt {
+	private static final String OUTPUT_EXTENSION = ".pptx";
+	private static final String DEFAULT_TEMPLATE = "Ch00 2012.pptx";
+	static int fileNumber;
 
 	/** Main program
 	 * @param args One or more input filenames; if none, a built-in demo file is processed.
 	 */
 	public static void main(String[] args) {
+		String template = DEFAULT_TEMPLATE;
 		final TextToPpt program = new TextToPpt();
 		BufferedReader is;
 		try {
 			if (args.length > 0) {
 				for (String arg : args) {
 					is = getReaderFor(arg);
-					saveShow(program.readAndProcess(is), "/tmp/demoshow.pptx");
+					saveShow(program.readAndProcess(is, template), generateFileName(arg));
 					is.close();
 				}
 			} else {
 				InputStream bis = program.getClass().getResourceAsStream("/demoshow.txt");
 				is = new BufferedReader(new InputStreamReader(bis));
-				// XXX should base name on input name
-				saveShow(program.readAndProcess(is), "/tmp/demoshow.pptx");
+				saveShow(program.readAndProcess(is, template), generateFileName("/tmp/demoshow.txt"));
 				is.close();
 			}
 		} catch (IOException e) {
 			System.err.println("Unexpected exception " + e);
 		}
+	}
+	
+	/** Output filename based on input name, but replace ".txt" or whatever with ".pptx" */
+	private static String generateFileName(String inputFileName) {
+		int dot = inputFileName.lastIndexOf('.');
+		if (dot == -1) {
+			return String.format("/tmp/generated%d.pptx");
+		}
+		return inputFileName.substring(0, dot) + OUTPUT_EXTENSION;
 	}
 	
 	XMLSlideShow show;
@@ -71,8 +83,8 @@ public class TextToPpt {
 	 * @param is A BufferedReader for inputting
 	 * @return The complete(?) XMLSlideShow generated from the input.
 	 */
-	private XMLSlideShow readAndProcess(BufferedReader is) {
-		show = readTemplate(getInputStreamFor("template/ltree/Ch00 2012.potx"), "POTX");
+	private XMLSlideShow readAndProcess(BufferedReader is, String template) {
+		show = readTemplate(getInputStreamFor(template), "POTX");
 		List<Item> items = new ArrayList<>();
 		try {
 			String line = is.readLine();
@@ -122,6 +134,7 @@ public class TextToPpt {
 	static void saveShow(XMLSlideShow show, String fileName) throws IOException {
 		try (FileOutputStream out = new FileOutputStream(fileName)) {
 			show.write(out);
+			System.out.println("Saved show to " + fileName);
     	}
 	}
 
@@ -213,6 +226,7 @@ public class TextToPpt {
 	
 	static String[] paths = {
 		"src/main/resources",
+		System.getProperty("user.home") + "/template/ltree",
 		System.getProperty("user.home")	
 	};
 	static InputStream getInputStreamFor(String fileName) {
@@ -222,7 +236,10 @@ public class TextToPpt {
 					return new FileInputStream(f);
 			}
 			for (String d : paths) {
-				if ((f = new File(d, fileName)).exists()) {
+				f = new File(d, fileName);
+				System.out.printf("TextToPpt.getInputStreamFor(%s): try %s%n",
+						fileName, f);
+				if (f.exists()) {
 					return new FileInputStream(f);
 				}
 			}
@@ -239,7 +256,10 @@ public class TextToPpt {
 					return new BufferedReader(new FileReader(f));
 			}
 			for (String d : paths) {
-				if ((f = new File(d, fileName)).exists()) {
+				f = new File(d, fileName);
+				System.out.printf("TextToPpt.getInputStreamFor(%s): try %s%n",
+						fileName, f);
+				if (f.exists()) {
 					return new BufferedReader(new FileReader(f));
 				}
 			}
