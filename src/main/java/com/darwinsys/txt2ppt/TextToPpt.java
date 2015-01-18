@@ -37,7 +37,7 @@ import org.apache.poi.xslf.usermodel.XSLFTextShape;
  */
 public class TextToPpt {
 	private static final String OUTPUT_EXTENSION = ".pptx";
-	private static final String DEFAULT_TEMPLATE = "Chapter 2012.pptx";
+	private static final String DEFAULT_TEMPLATE = "Chapter 2014.pptx";
 	static int fileNumber;
 	private static final boolean verbose = false;
 
@@ -130,7 +130,7 @@ public class TextToPpt {
 					System.out.println("TextToPpt.createSlide()");
 
 					// title and content
-					XSLFSlideLayout titleBodyLayout = defaultMaster.getLayout(SlideLayout.TITLE_AND_CONTENT);
+					XSLFSlideLayout titleBodyLayout = defaultMaster.getLayout(SlideLayout.CUST);
 					XSLFSlide slide = show.createSlide(titleBodyLayout);
 
 					XSLFTextShape title1 = slide.getPlaceholder(0);
@@ -145,7 +145,7 @@ public class TextToPpt {
 				para.addNewTextRun().setText(text.toString());
 				if (inCode) {
 					para.setBullet(false);
-					para.setLevel(codeIndent - 1);
+					para.setLevel(thisIndent - 1);
 					// XXX Also set the font to Courier New?
 				} else {
 					para.setLevel(thisIndent - 1);
@@ -217,7 +217,7 @@ public class TextToPpt {
 		// for demonstration purposes we use the first (default) slide master
 		XSLFSlideMaster defaultMaster = show.getSlideMasters()[0];
 		// title slide
-		XSLFSlideLayout titleLayout = defaultMaster.getLayout(SlideLayout.TITLE);
+		XSLFSlideLayout titleLayout = defaultMaster.getLayout(SlideLayout.CUST);
 		// fill the placeholders
 		XSLFSlide slide1 = show.createSlide(titleLayout);
 		XSLFTextShape title1 = slide1.getPlaceholder(0);
