@@ -2,9 +2,9 @@
 
 JARDIR=${HOME}/lib
 
-JAR=textToPpt.jar
+JAR=textToPpt-1.0-SNAPSHOT-jar-with-dependencies.jar
 
-# Or you could just use JARDIR=$HOME/git/TextToPpt JAR=textToPpt-1.0-SNAPSHOT-jar-with-dependencies.jar
+# Or you could just use JARDIR=$HOME/git/TextToPpt/target
 
 # set -x
 
