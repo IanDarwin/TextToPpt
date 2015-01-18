@@ -19,6 +19,7 @@ import org.apache.poi.xslf.usermodel.XSLFSlide;
 import org.apache.poi.xslf.usermodel.XSLFSlideLayout;
 import org.apache.poi.xslf.usermodel.XSLFSlideMaster;
 import org.apache.poi.xslf.usermodel.XSLFTextParagraph;
+import org.apache.poi.xslf.usermodel.XSLFTextRun;
 import org.apache.poi.xslf.usermodel.XSLFTextShape;
 
 /**
@@ -142,11 +143,12 @@ public class TextToPpt {
 				}
 					
 				final XSLFTextParagraph para = body.addNewTextParagraph();
-				para.addNewTextRun().setText(text.toString());
+				final XSLFTextRun run = para.addNewTextRun();
+				run.setText(text);
 				if (inCode) {
 					para.setBullet(false);
 					para.setLevel(thisIndent - 1);
-					// XXX Also set the font to Courier New?
+					run.setFontFamily("Courier New");
 				} else {
 					para.setLevel(thisIndent - 1);
 				}
