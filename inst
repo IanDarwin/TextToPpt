@@ -2,4 +2,6 @@
 
 set -x
 
-cp target/textToPpt-1.0-SNAPSHOT-jar-with-dependencies.jar  ~/lib/textToPpt.jar
+JARDIR=${HOME}/lib
+
+cp target/textToPpt-1.0-SNAPSHOT-jar-with-dependencies.jar  ${JARDIR}
