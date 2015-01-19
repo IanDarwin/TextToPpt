@@ -27,19 +27,20 @@ My Slide #2
 	}
 	----
 	That was a code insert.
+My Troisieme Slide
+	This is what it should look like:
+	IMAGE images/screenshot.png
 ----
 
 === BUGS/TODO
 
-* Needs parameteriztion ("getopt" or config file): has some dependencies on my personal setup and workflow.
+* Needs parameterization ("getopt" or config file): has some dependencies on my personal setup and workflow.
 * Need a syntax to specify which layout (hardcoding CUST isn't great; should allow either a number or
 a SlideLayout enum label (pick with SlideLayout.valueOf(verb.toUpperCase())
-* Need a syntax to include image files ("IMAGE" as first word)
+* IMAGE takes any file but only formats supported by XSLFPictureData type work (and this does not include PDF). Image placement needs manual intervention.
 * Need a syntax to insert speaker notes ("NOTE" as first word)
 * You can use a .potx or a .pptx (or older) for your template, but any slides in it will not be removed.
-* Code segments don't have a leading bullet but aren't yet put into CourierNew; 
-there's still room to improve the handling of leading tabs in code.
-* LT Authors: Doesn't seem to work with the 2014 templates, so try the 2012 versions then Apply Style from the 2014 when opened in PPT.
+* There's still room to improve the handling of leading tabs in code.
 * This may all be obviated when AsciiDoctor gets the ability to output slide shows fully working.
 
 === About
