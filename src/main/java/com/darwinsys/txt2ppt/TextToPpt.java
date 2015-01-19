@@ -146,10 +146,16 @@ public class TextToPpt {
 				if (trimmedLine.startsWith("IMAGE")) {
 					String fileName = trimmedLine.substring(6); // Trim IMAGE + ' '
 					System.out.println("IMAGE at line " + lineNumber + ": " + fileName);
+					XSLFPictureType type = null;
+					try {
+						type = XSLFPictureType.valueOfFilename(fileName);
+					} catch (Exception e) {
+						System.err.println("Unknown image type " + fileName);
+						continue;
+					}
 					byte[] pictureData = IOUtils.toByteArray(new FileInputStream(fileName));
-
-			        int idx = show.addPicture(pictureData, XSLFPictureData.PICTURE_TYPE_PNG);
-			        XSLFPictureShape pic = slide.createPicture(idx);
+			        int idx = show.addPicture(pictureData, type.ordinal());
+			        slide.createPicture(idx);
 			        continue;
 				}
 				
