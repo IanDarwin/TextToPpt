@@ -96,6 +96,7 @@ public class TextToPpt {
 			String line = is.readLine(); ++lineNumber;
 			doChapterTitleSlide(show, line); // First line of file is chapter title
 			
+			XSLFSlide slide = null;
 			XSLFTextShape body = null;
 			int thisIndent = 0, codeIndent = 0;
 			// MAIN LOOP
@@ -124,7 +125,6 @@ public class TextToPpt {
 				while (line.charAt(thisIndent) == '\t') {
 							++thisIndent;
 				}
-				String text = line.substring(thisIndent);
 				if (thisIndent == 0) {
 					// First line with no tabs is next title, so start new slide
 					
@@ -132,19 +132,31 @@ public class TextToPpt {
 
 					// title and content
 					XSLFSlideLayout titleBodyLayout = defaultMaster.getLayout(SlideLayout.CUST);
-					XSLFSlide slide = show.createSlide(titleBodyLayout);
+					slide = show.createSlide(titleBodyLayout);
 
 					XSLFTextShape title1 = slide.getPlaceholder(0);
-					title1.setText(text);
+					title1.setText(line);
 
 					body = slide.getPlaceholder(1);
 					body.clearText(); // unset any existing text
 					continue;
 				}
-					
+				
+				// An Image?
+				if (trimmedLine.startsWith("IMAGE")) {
+					String fileName = trimmedLine.substring(6); // Trim IMAGE + ' '
+					System.out.println("IMAGE at line " + lineNumber + ": " + fileName);
+					byte[] pictureData = IOUtils.toByteArray(new FileInputStream(fileName));
+
+			        int idx = show.addPicture(pictureData, XSLFPictureData.PICTURE_TYPE_PNG);
+			        XSLFPictureShape pic = slide.createPicture(idx);
+			        continue;
+				}
+				
+				// Else a regular line
 				final XSLFTextParagraph para = body.addNewTextParagraph();
 				final XSLFTextRun run = para.addNewTextRun();
-				run.setText(text);
+				run.setText(line.substring(thisIndent));
 				if (inCode) {
 					para.setBullet(false);
 					para.setLevel(thisIndent - 1);
