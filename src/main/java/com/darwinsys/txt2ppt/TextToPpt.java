@@ -13,11 +13,13 @@ import java.io.InputStreamReader;
 import org.apache.poi.util.IOUtils;
 import org.apache.poi.xslf.usermodel.SlideLayout;
 import org.apache.poi.xslf.usermodel.XMLSlideShow;
+import org.apache.poi.xslf.usermodel.XSLFNotes;
 import org.apache.poi.xslf.usermodel.XSLFPictureData;
 import org.apache.poi.xslf.usermodel.XSLFPictureShape;
 import org.apache.poi.xslf.usermodel.XSLFSlide;
 import org.apache.poi.xslf.usermodel.XSLFSlideLayout;
 import org.apache.poi.xslf.usermodel.XSLFSlideMaster;
+import org.apache.poi.xslf.usermodel.XSLFTextBox;
 import org.apache.poi.xslf.usermodel.XSLFTextParagraph;
 import org.apache.poi.xslf.usermodel.XSLFTextRun;
 import org.apache.poi.xslf.usermodel.XSLFTextShape;
@@ -144,7 +146,7 @@ public class TextToPpt {
 				
 				// An Image?
 				if (trimmedLine.startsWith("IMAGE")) {
-					String fileName = trimmedLine.substring(6); // Trim IMAGE + ' '
+					String fileName = trimmedLine.substring(5).trim();
 					System.out.println("IMAGE at line " + lineNumber + ": " + fileName);
 					XSLFPictureType type = null;
 					try {
@@ -157,6 +159,18 @@ public class TextToPpt {
 			        int idx = show.addPicture(pictureData, type.ordinal());
 			        slide.createPicture(idx);
 			        continue;
+				}
+				
+				// Speaker Note?
+				if (trimmedLine.startsWith("NOTE")) {
+					String noteText = trimmedLine.substring(4).trim();
+					System.out.println("NOTE at line " + lineNumber + ": " + noteText);
+					final XSLFNotes notes = show.getNotesSlide(slide);
+					//notes.getPlaceholder(0).setText(noteText);
+					final XSLFTextBox textBox = notes.createTextBox();
+					final XSLFTextParagraph notesPara = textBox.addNewTextParagraph();
+					notesPara.addNewTextRun().setText(noteText);
+					continue;
 				}
 				
 				// Else a regular line

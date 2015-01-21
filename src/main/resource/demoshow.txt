@@ -15,5 +15,6 @@ Slide #2 Title
 			// Some bad code here
 		}
 		----
+	NOTE This slide should have a speaker note.
 	Slide 2 B3
 	Slide 4 B4
