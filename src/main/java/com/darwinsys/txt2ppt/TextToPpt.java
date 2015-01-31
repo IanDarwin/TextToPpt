@@ -101,6 +101,7 @@ public class TextToPpt {
 			XSLFSlide slide = null;
 			XSLFTextShape body = null;
 			int thisIndent = 0, codeIndent = 0;
+			
 			// MAIN LOOP
 			while ((line = is.readLine()) != null) {
 				++lineNumber;
@@ -108,6 +109,14 @@ public class TextToPpt {
 				if (trimmedLine.length() == 0) {
 					continue;
 				}
+				
+				// Strip comment lines, but only at the left margin - otherwise,
+				// what if the slide contains a scripting language example?
+				if (line.charAt(0) == '#') {
+					continue;
+				}
+				
+				// Code insert? Syntax stolen from AsciiDoc
 				if (trimmedLine.equals("----")) {
 					inCode = !inCode;
 					if (inCode) {
@@ -115,6 +124,7 @@ public class TextToPpt {
 					}
 					continue;
 				}
+				
 				if (line.charAt(0) == ' ') {
 					System.err.println("Warning: Leading spaces on line " +
 						lineNumber + ", trying to correct to tabs.");
@@ -126,22 +136,6 @@ public class TextToPpt {
 				thisIndent = 0;
 				while (line.charAt(thisIndent) == '\t') {
 							++thisIndent;
-				}
-				if (thisIndent == 0) {
-					// First line with no tabs is next title, so start new slide
-					
-					System.out.println("TextToPpt.createSlide()");
-
-					// title and content
-					XSLFSlideLayout titleBodyLayout = defaultMaster.getLayout(SlideLayout.CUST);
-					slide = show.createSlide(titleBodyLayout);
-
-					XSLFTextShape title1 = slide.getPlaceholder(0);
-					title1.setText(line);
-
-					body = slide.getPlaceholder(1);
-					body.clearText(); // unset any existing text
-					continue;
 				}
 				
 				// An Image?
@@ -170,6 +164,27 @@ public class TextToPpt {
 					final XSLFTextBox textBox = notes.createTextBox();
 					final XSLFTextParagraph notesPara = textBox.addNewTextParagraph();
 					notesPara.addNewTextRun().setText(noteText);
+					continue;
+				}
+				
+				if (thisIndent == 0) {
+					// First line with no tabs is next title, so start new slide
+					System.out.println("TextToPpt.createSlide()");
+
+					if (inCode) {
+						System.out.println("WARNING: code block not closed by line " + lineNumber);
+						inCode = false;
+					}
+
+					// title and content
+					XSLFSlideLayout titleBodyLayout = defaultMaster.getLayout(SlideLayout.CUST);
+					slide = show.createSlide(titleBodyLayout);
+
+					XSLFTextShape title1 = slide.getPlaceholder(0);
+					title1.setText(line);
+
+					body = slide.getPlaceholder(1);
+					body.clearText(); // unset any existing text
 					continue;
 				}
 				
